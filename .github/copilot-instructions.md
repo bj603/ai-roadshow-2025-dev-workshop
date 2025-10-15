@@ -1,5 +1,21 @@
 # AI Coding Agent Instructions
 
+
+# POC Development Guidelines
+
+**This is a POC (Proof of Concept) environment.** Focus on rapid development and demonstrating functionality. Don't write tests, extensive logging, complex validation frameworks, or production-level architecture. Prioritize features over perfection.
+
+## Verification Guidelines
+
+- **NEVER write test scripts** to verify the result
+- **NEVER test with the server running** - no manual testing with curl, Invoke-WebRequest, or similar tools
+- **NEVER run the app** (`npm start`, `ng serve`, etc.) - only build it
+- **NEVER write documentation** about changes or features
+- When work is complete, simply **build the app** to verify:
+  - For frontend: `npm run build` - TypeScript compilation + Vite production build
+  - For backend: `npm run server:build` - Compile TypeScript backend to JavaScript
+- **If it builds successfully, it's done** - no further verification needed
+
 ## Project Architecture
 
 This is a **Workspace Reservation System** built with Vue 3 + TypeScript + Vite frontend and Express.js + Node.js backend. The app demonstrates a full-stack authentication flow with role-based access.
