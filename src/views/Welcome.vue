@@ -13,8 +13,22 @@
           <p><strong>Email:</strong> {{ user?.email }}</p>
           <p><strong>Role:</strong> <span class="role-badge">{{ user?.role }}</span></p>
         </div>
-        <div class="placeholder">
-          <p>Ready to add features</p>
+        <div class="actions-section">
+          <h3>Quick Actions</h3>
+          <div class="action-cards">
+            <div class="action-card" @click="navigateToReservations">
+              <div class="action-icon">🏢</div>
+              <h4>Workspace Reservations</h4>
+              <p>Browse and reserve desks and parking spaces</p>
+              <button class="action-btn">Manage Reservations</button>
+            </div>
+            <div class="action-card disabled">
+              <div class="action-icon">👥</div>
+              <h4>Team Management</h4>
+              <p>Coming soon - manage team resources</p>
+              <button class="action-btn" disabled>Coming Soon</button>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -37,6 +51,10 @@ onMounted(() => {
 const handleLogout = () => {
   authService.clearAuth();
   router.push('/login');
+};
+
+const navigateToReservations = () => {
+  router.push('/reservations');
 };
 </script>
 
@@ -122,6 +140,84 @@ const handleLogout = () => {
   font-size: 0.875rem;
   font-weight: 500;
   text-transform: capitalize;
+}
+
+.actions-section {
+  margin-top: 2rem;
+}
+
+.actions-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 1.5rem 0;
+}
+
+.action-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.action-card {
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-card:hover:not(.disabled) {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.action-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.action-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.action-card h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+}
+
+.action-card p {
+  color: #4a5568;
+  font-size: 0.875rem;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+.action-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.action-btn:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+.action-btn:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
 }
 
 .placeholder {
