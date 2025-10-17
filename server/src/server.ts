@@ -91,13 +91,8 @@ app.post('/api/auth', (req, res) => {
 });
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    service: 'workspace-reservation-api'
-  });
-});
+// that returns service status and timestamp
+// to help monitor the API health
 
 // Version endpoint
 app.get('/api/version', (req, res) => {
