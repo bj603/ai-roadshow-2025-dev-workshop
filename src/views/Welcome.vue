@@ -13,8 +13,10 @@
           <p><strong>Email:</strong> {{ user?.email }}</p>
           <p><strong>Role:</strong> <span class="role-badge">{{ user?.role }}</span></p>
         </div>
-        <div class="placeholder">
-          <p>Ready to add features</p>
+        <div class="actions">
+          <router-link to="/reservations" class="action-btn">
+            🏢 Go to Reservations
+          </router-link>
         </div>
       </div>
     </main>
@@ -124,19 +126,26 @@ const handleLogout = () => {
   text-transform: capitalize;
 }
 
-.placeholder {
+.actions {
   margin-top: 3rem;
-  padding: 3rem;
-  background: #f7fafc;
-  border: 2px dashed #cbd5e0;
-  border-radius: 8px;
   text-align: center;
 }
 
-.placeholder p {
-  margin: 0;
-  color: #718096;
-  font-size: 1.125rem;
+.action-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
   font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 </style>
