@@ -13,9 +13,8 @@
           <p><strong>Email:</strong> {{ user?.email }}</p>
           <p><strong>Role:</strong> <span class="role-badge">{{ user?.role }}</span></p>
         </div>
-        <div class="placeholder">
-          <p>Ready to add features</p>
-        </div>
+        <!-- Reservation Management Component -->
+        <ReservationManager />
       </div>
     </main>
   </div>
@@ -26,6 +25,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { authService } from '../services/auth';
 import type { User } from '../services/api';
+import ReservationManager from '../components/ReservationManager.vue';
 
 const router = useRouter();
 const user = ref<User | null>(null);
