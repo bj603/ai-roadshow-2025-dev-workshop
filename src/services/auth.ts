@@ -15,9 +15,17 @@ export const authService = {
     return userStr ? JSON.parse(userStr) : null;
   },
 
+  getCurrentUser(): User | null {
+    return this.getUser();
+  },
+
   clearAuth() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+  },
+
+  logout() {
+    this.clearAuth();
   },
 
   isAuthenticated(): boolean {

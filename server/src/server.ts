@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
+import { storage } from './data/storage.js';
+import { reservationService } from './services/reservationService.js';
+import { ApiResponse, CreateReservationRequest } from './types/index.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -138,6 +141,250 @@ app.get('/api/profile', authenticateToken, (req, res) => {
   });
 });
 
+// ========== RESERVATION SYSTEM API ENDPOINTS ==========
+
+// Get all reservable objects
+app.get('/api/objects', (req, res) => {
+  try {
+    const { type } = req.query;
+    let objects = storage.getAllObjects();
+    
+    if (type && (type === 'desk' || type === 'parking')) {
+      objects = storage.getObjectsByType(type);
+    }
+
+    const response: ApiResponse = {
+      success: true,
+      data: objects,
+      message: `Found ${objects.length} objects`
+    };
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve objects'
+    });
+  }
+});
+
+// Check availability for a specific object
+app.get('/api/objects/:id/availability', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { startDateTime, endDateTime } = req.query;
+
+    if (!startDateTime || !endDateTime) {
+      return res.status(400).json({
+        success: false,
+        error: 'startDateTime and endDateTime query parameters are required'
+      });
+    }
+
+    const availability = reservationService.checkAvailability(
+      id,
+      startDateTime as string,
+      endDateTime as string
+    );
+
+    const response: ApiResponse = {
+      success: true,
+      data: availability
+    };
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to check availability'
+    });
+  }
+});
+
+// Get available objects for a time period
+app.get('/api/objects/available', (req, res) => {
+  try {
+    const { startDateTime, endDateTime, type } = req.query;
+
+    if (!startDateTime || !endDateTime) {
+      return res.status(400).json({
+        success: false,
+        error: 'startDateTime and endDateTime query parameters are required'
+      });
+    }
+
+    const availableObjects = reservationService.getAvailableObjects(
+      startDateTime as string,
+      endDateTime as string,
+      type as 'desk' | 'parking' | undefined
+    );
+
+    const response: ApiResponse = {
+      success: true,
+      data: availableObjects,
+      message: `Found ${availableObjects.length} available objects`
+    };
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get available objects'
+    });
+  }
+});
+
+// Create a new reservation (protected)
+app.post('/api/reservations', authenticateToken, (req, res) => {
+  try {
+    const userId = (req as any).user.userId;
+    const { objectId, startDateTime, endDateTime }: CreateReservationRequest = req.body;
+
+    const reservationRequest: CreateReservationRequest = {
+      objectId,
+      userId,
+      startDateTime,
+      endDateTime
+    };
+
+    const result = reservationService.createReservation(reservationRequest);
+
+    if (result.success) {
+      const response: ApiResponse = {
+        success: true,
+        data: result.reservation,
+        message: 'Reservation created successfully'
+      };
+      res.status(201).json(response);
+    } else {
+      res.status(400).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create reservation'
+    });
+  }
+});
+
+// Get user's reservations (protected)
+app.get('/api/reservations', authenticateToken, (req, res) => {
+  try {
+    const userId = (req as any).user.userId;
+    const { status } = req.query;
+
+    let reservations;
+    if (status === 'active') {
+      reservations = reservationService.getActiveReservationsForUser(userId);
+    } else if (status === 'upcoming') {
+      reservations = reservationService.getUpcomingReservationsForUser(userId);
+    } else {
+      reservations = reservationService.getReservationsForUser(userId);
+    }
+
+    const response: ApiResponse = {
+      success: true,
+      data: reservations,
+      message: `Found ${reservations.length} reservations`
+    };
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve reservations'
+    });
+  }
+});
+
+// Get reservations for a specific object
+app.get('/api/objects/:id/reservations', (req, res) => {
+  try {
+    const { id } = req.params;
+    const reservations = reservationService.getReservationsForObject(id);
+
+    const response: ApiResponse = {
+      success: true,
+      data: reservations,
+      message: `Found ${reservations.length} reservations for object ${id}`
+    };
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve object reservations'
+    });
+  }
+});
+
+// Cancel a reservation (protected)
+app.delete('/api/reservations/:id', authenticateToken, (req, res) => {
+  try {
+    const userId = (req as any).user.userId;
+    const { id } = req.params;
+
+    const result = reservationService.cancelReservation(id, userId);
+
+    if (result.success) {
+      const response: ApiResponse = {
+        success: true,
+        data: result.reservation,
+        message: 'Reservation cancelled successfully'
+      };
+      res.json(response);
+    } else {
+      res.status(400).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to cancel reservation'
+    });
+  }
+});
+
+// Admin endpoint: Get storage statistics
+app.get('/api/admin/stats', authenticateToken, (req, res) => {
+  try {
+    const userRole = (req as any).user.role;
+    
+    if (userRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Admin access required'
+      });
+    }
+
+    const stats = storage.getStats();
+    
+    // Complete expired reservations and get count
+    const completedCount = reservationService.completeExpiredReservations();
+    
+    const response: ApiResponse = {
+      success: true,
+      data: {
+        ...stats,
+        completedExpiredReservations: completedCount
+      },
+      message: 'Storage statistics retrieved successfully'
+    };
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve statistics'
+    });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
@@ -146,6 +393,12 @@ app.listen(PORT, () => {
   console.log(`   Admin: admin@example.com / admin123`);
   console.log(`   Manager: manager@example.com / manager123`);
   console.log(`   User: user@example.com / user123`);
+  console.log(`🏢 Reservation System Endpoints:`);
+  console.log(`   GET /api/objects - List all reservable objects`);
+  console.log(`   GET /api/objects/:id/availability - Check availability`);
+  console.log(`   POST /api/reservations - Create reservation (auth required)`);
+  console.log(`   GET /api/reservations - Get user reservations (auth required)`);
+  console.log(`   DELETE /api/reservations/:id - Cancel reservation (auth required)`);
 });
 
 export default app;
