@@ -63,7 +63,7 @@ const handleLogin = async () => {
     });
 
     authService.saveAuth(response.token, response.user);
-    router.push('/welcome');
+    router.push('/reservations');
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Login failed';
   } finally {

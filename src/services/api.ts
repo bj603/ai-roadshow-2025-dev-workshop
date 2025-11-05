@@ -39,6 +39,9 @@ const callProtectedAPI = async (endpoint: string, options: RequestInit = {}) => 
   return fetch(url, { ...options, headers });
 };
 
+// Export helper functions for reuse
+export { callAPI, callProtectedAPI };
+
 export const api = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const response = await callAPI('auth', {
