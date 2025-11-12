@@ -13,8 +13,38 @@
           <p><strong>Email:</strong> {{ user?.email }}</p>
           <p><strong>Role:</strong> <span class="role-badge">{{ user?.role }}</span></p>
         </div>
-        <div class="placeholder">
-          <p>Ready to add features</p>
+        
+        <div class="actions-section">
+          <h3>Quick Actions</h3>
+          <div class="action-buttons">
+            <router-link to="/reservations" class="action-btn primary">
+              <span class="icon">📋</span>
+              View My Reservations
+            </router-link>
+            <router-link to="/reservations/new" class="action-btn secondary">
+              <span class="icon">➕</span>
+              New Reservation
+            </router-link>
+          </div>
+        </div>
+        
+        <div class="info-section">
+          <h3>Reservation System</h3>
+          <p>Manage your workspace and parking reservations easily. Book desks and parking spots, view your current reservations, and manage your schedule.</p>
+          <div class="feature-list">
+            <div class="feature-item">
+              <span class="feature-icon">🏢</span>
+              <span>Book desks and parking spots</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">📅</span>
+              <span>Schedule reservations in advance</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🔄</span>
+              <span>Modify or cancel existing reservations</span>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -122,6 +152,114 @@ const handleLogout = () => {
   font-size: 0.875rem;
   font-weight: 500;
   text-transform: capitalize;
+}
+
+.actions-section {
+  margin: 2rem 0;
+}
+
+.actions-section h3 {
+  margin: 0 0 1rem;
+  color: #1a202c;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.action-btn.primary {
+  background: #667eea;
+  color: white;
+}
+
+.action-btn.primary:hover {
+  background: #5568d3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.action-btn.secondary {
+  background: #f7fafc;
+  color: #667eea;
+  border-color: #667eea;
+}
+
+.action-btn.secondary:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.action-btn .icon {
+  font-size: 1.25rem;
+}
+
+.info-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.info-section h3 {
+  margin: 0 0 1rem;
+  color: #1a202c;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.info-section p {
+  margin: 0 0 1.5rem;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.feature-icon {
+  font-size: 1.25rem;
+  width: 2rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    justify-content: center;
+  }
 }
 
 .placeholder {
